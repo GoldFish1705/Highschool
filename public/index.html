@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>วางแผนการอ่านหนังสือและติดตามเป้าหมายการเรียน</title>
+  <meta name="description" content="เว็บไซต์วางแผนการอ่านหนังสือและติดตามเป้าหมายการเรียนสำหรับนักเรียนระดับมัธยมศึกษาตอนปลาย">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <div class="app">
+    <!-- เมนูข้างสำหรับจอคอมพิวเตอร์ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">📖</span>
+        <strong>
+          วางแผนการอ่าน
+          <span>ติดตามเป้าหมายการเรียน</span>
+        </strong>
+      </div>
+      <nav id="sidebar-nav" aria-label="เมนูหลัก"></nav>
+      <div class="sidebar-footer">
+        <div class="who" id="who"></div>
+        <button type="button" class="btn btn-sm btn-block" id="logout-btn">ออกจากระบบ</button>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <!-- แถบหัวสำหรับมือถือ -->
+      <header class="mobile-header">
+        <span class="logo" aria-hidden="true">📖</span>
+        <strong>วางแผนการอ่านหนังสือ</strong>
+      </header>
+
+      <main class="content" id="view">
+        <p class="loading">กำลังโหลด...</p>
+      </main>
+    </div>
+  </div>
+
+  <!-- เมนูล่างสำหรับมือถือ -->
+  <nav class="mobile-nav" id="mobile-nav" aria-label="เมนูหลัก (มือถือ)"></nav>
+
+  <!-- กล่องโต้ตอบใช้ร่วมกันทุกหน้า -->
+  <dialog id="dialog">
+    <form method="dialog" id="dialog-form">
+      <div class="dialog-head">
+        <h2 id="dialog-title">แก้ไข</h2>
+        <button type="button" class="icon-btn" id="dialog-close" aria-label="ปิด">&times;</button>
+      </div>
+      <div class="dialog-body" id="dialog-body"></div>
+      <div class="dialog-foot">
+        <button type="button" class="btn" id="dialog-cancel">ยกเลิก</button>
+        <button type="submit" class="btn btn-primary" id="dialog-save">บันทึก</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

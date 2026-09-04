@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>เข้าสู่ระบบ | วางแผนการอ่านหนังสือ</title>
+  <meta name="description" content="เว็บไซต์วางแผนการอ่านหนังสือและติดตามเป้าหมายการเรียนสำหรับนักเรียนระดับมัธยมศึกษาตอนปลาย">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <main class="auth-page">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="logo" aria-hidden="true">📖</div>
+        <h1>วางแผนการอ่านหนังสือ</h1>
+        <p>จัดตารางอ่าน ตั้งเป้าหมาย และติดตามความก้าวหน้าของตัวเอง</p>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button type="button" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login">เข้าสู่ระบบ</button>
+        <button type="button" id="tab-register" role="tab" aria-selected="false" aria-controls="panel-register">สมัครสมาชิก</button>
+      </div>
+
+      <div id="message" aria-live="polite"></div>
+
+      <!-- ฟอร์มเข้าสู่ระบบ -->
+      <form id="panel-login" role="tabpanel" aria-labelledby="tab-login" novalidate>
+        <div class="field">
+          <label for="login-username">ชื่อผู้ใช้</label>
+          <input type="text" id="login-username" name="username" autocomplete="username"
+                 required maxlength="32" spellcheck="false" autocapitalize="none">
+        </div>
+        <div class="field">
+          <label for="login-password">รหัสผ่าน</label>
+          <input type="password" id="login-password" name="password" autocomplete="current-password"
+                 required maxlength="128">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="login-submit">เข้าสู่ระบบ</button>
+      </form>
+
+      <!-- ฟอร์มสมัครสมาชิก -->
+      <form id="panel-register" role="tabpanel" aria-labelledby="tab-register" novalidate hidden>
+        <div class="field">
+          <label for="register-display">ชื่อที่ใช้แสดง</label>
+          <input type="text" id="register-display" name="displayName" autocomplete="name"
+                 required maxlength="60" placeholder="เช่น กฤษกร">
+        </div>
+        <div class="field">
+          <label for="register-username">ชื่อผู้ใช้</label>
+          <input type="text" id="register-username" name="username" autocomplete="username"
+                 required maxlength="32" spellcheck="false" autocapitalize="none" placeholder="เช่น krit2569">
+          <p class="help">ภาษาอังกฤษพิมพ์เล็ก ตัวเลข จุด ขีดล่าง ขีดกลาง ยาว 3-32 ตัวอักษร</p>
+        </div>
+        <div class="field">
+          <label for="register-password">รหัสผ่าน</label>
+          <input type="password" id="register-password" name="password" autocomplete="new-password"
+                 required maxlength="128">
+          <p class="help" id="password-help">อย่างน้อย 10 ตัวอักษร และควรผสมตัวอักษรกับตัวเลข</p>
+        </div>
+        <div class="field">
+          <label for="register-confirm">ยืนยันรหัสผ่าน</label>
+          <input type="password" id="register-confirm" name="confirm" autocomplete="new-password"
+                 required maxlength="128">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="register-submit">สมัครสมาชิก</button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="/js/login.js"></script>
+</body>
+</html>
