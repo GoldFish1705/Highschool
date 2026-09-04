@@ -64,11 +64,36 @@ const dataDir = path.resolve(rootDir, process.env.DATA_DIR || 'data');
 mkdirSync(dataDir, { recursive: true });
 
 /**
- * APP_ORIGIN คือ origin จริงของเว็บไซต์ เช่น https://study-planner.fly.dev
+ * APP_ORIGIN คือ origin จริงของเว็บไซต์ เช่น https://study-planner.onrender.com
  * ใช้ตรวจ header Origin/Referer เพื่อกัน CSRF
- * ถ้าไม่ได้ตั้งไว้ ระบบจะเทียบกับ header Host ของ request แทน
+ *
+ * ถ้าไม่ได้ตั้งไว้ ระบบจะถอยไปเทียบกับ header Host ของ request แทน ซึ่งยังกัน CSRF
+ * จากเบราว์เซอร์ได้อยู่ (เพราะเบราว์เซอร์เป็นคนกำหนด Host เอง หน้าเว็บปลอมสั่งไม่ได้)
+ * แต่จะอ่อนแอลงถ้ามี proxy ที่ตั้งค่าผิดแล้วส่ง Host ที่ผู้โจมตีกำหนดเข้ามา
+ * จึงควรตั้ง APP_ORIGIN ให้ชัดเจนเสมอเมื่อใช้งานจริง
+ *
+ * โฮสต์ยอดนิยมบอก URL จริงของแอปผ่าน env ให้อยู่แล้ว จึงอ่านค่าจากตรงนั้นให้อัตโนมัติ
+ * ผู้ใช้จึงไม่ต้องมาตั้งเองทีหลัง (ตอน deploy ครั้งแรกยังไม่มีใครรู้ URL ล่วงหน้า)
  */
-const appOrigin = (process.env.APP_ORIGIN || '').replace(/\/+$/, '') || null;
+function detectAppOrigin() {
+  const explicit = (process.env.APP_ORIGIN || '').trim();
+  if (explicit) return explicit.replace(/\/+$/, '');
+
+  // Render ตั้งค่าเหล่านี้ให้ทุก service โดยอัตโนมัติ
+  const renderUrl = (process.env.RENDER_EXTERNAL_URL || '').trim();
+  if (renderUrl) return renderUrl.replace(/\/+$/, '');
+
+  const renderHost = (process.env.RENDER_EXTERNAL_HOSTNAME || '').trim();
+  if (renderHost) return `https://${renderHost.replace(/\/+$/, '')}`;
+
+  // Fly.io ตั้ง FLY_APP_NAME ให้ และโดเมนเริ่มต้นคือ <ชื่อแอป>.fly.dev
+  const flyApp = (process.env.FLY_APP_NAME || '').trim();
+  if (flyApp) return `https://${flyApp}.fly.dev`;
+
+  return null;
+}
+
+const appOrigin = detectAppOrigin();
 
 export const config = {
   rootDir,

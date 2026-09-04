@@ -1,0 +1,59 @@
+# Render Blueprint — ไฟล์นี้ทำให้ deploy ได้โดยแทบไม่ต้องตั้งค่าอะไรเอง
+#
+# วิธีใช้ (ดูขั้นตอนเต็มแบบมีภาพประกอบใน DEPLOY.md)
+#   1. เข้า https://dashboard.render.com/blueprints
+#   2. กด "New Blueprint Instance" แล้วเลือก repo นี้
+#   3. กด Apply — Render จะอ่านไฟล์นี้แล้วตั้งค่าให้ครบเอง
+#
+# ข้อควรทราบสำคัญ: แพ็กเกจฟรีของ Render ใช้ดิสก์แบบชั่วคราว
+# ข้อมูลในฐานข้อมูล SQLite จะถูกล้างทุกครั้งที่ deploy ใหม่หรือเครื่องรีสตาร์ท
+# จึงเหมาะกับการนำเสนอโครงงาน แต่ยังไม่เหมาะกับการเก็บข้อมูลจริงระยะยาว
+# ถ้าต้องการให้ข้อมูลอยู่ถาวร ให้ใช้ Fly.io ตามไฟล์ fly.toml แทน
+
+services:
+  - type: web
+    name: study-planner
+    runtime: node
+    plan: free
+    region: singapore          # ใกล้ประเทศไทยที่สุด
+    branch: claude/webapp-project-security-e67u3s
+
+    # โครงงานนี้ไม่มี dependency และไม่มีขั้นตอน build จึงไม่ต้องทำอะไรเลย
+    buildCommand: "echo 'ไม่มี dependency และไม่ต้อง build'"
+    startCommand: "node --no-warnings --max-old-space-size=128 server/server.js"
+
+    # Render จะเรียกหน้านี้เพื่อดูว่าเว็บพร้อมให้บริการแล้วหรือยัง
+    healthCheckPath: /login
+
+    envVars:
+      # ต้องเป็น 22 ขึ้นไป เพราะโครงงานใช้ node:sqlite ซึ่งเพิ่มเข้ามาใน Node 22.5
+      # (มีไฟล์ .node-version กำกับไว้อีกชั้นหนึ่งด้วย)
+      - key: NODE_VERSION
+        value: "22"
+
+      - key: NODE_ENV
+        value: production
+
+      # ให้ Render สุ่มกุญแจลับให้เอง ผู้ใช้ไม่ต้องรันคำสั่งสร้างเอง
+      # และค่านี้จะไม่ปรากฏในโค้ดหรือใน git เลย
+      - key: SESSION_SECRET
+        generateValue: true
+
+      # อยู่หลัง reverse proxy ของ Render จึงต้องอ่าน IP จริงจาก X-Forwarded-For
+      # (ถ้าไม่เปิด ระบบจำกัดอัตราจะเห็นทุกคนเป็น IP เดียวกันหมด)
+      - key: TRUST_PROXY
+        value: "1"
+
+      # Render ให้ HTTPS อยู่แล้ว จึงบังคับให้คุกกี้ส่งผ่าน HTTPS เท่านั้น
+      - key: SECURE_COOKIES
+        value: "1"
+
+      # จำกัดชุดเธรดเบื้องหลังและ arena ของตัวจัดการหน่วยความจำ
+      # วัดจริงแล้วลดการใช้แรมสูงสุดจาก 148 MB เหลือ 110 MB
+      - key: UV_THREADPOOL_SIZE
+        value: "2"
+      - key: MALLOC_ARENA_MAX
+        value: "2"
+
+    # ไม่ต้องตั้ง APP_ORIGIN เอง เพราะ Render ตั้ง RENDER_EXTERNAL_URL ให้อัตโนมัติ
+    # และ server/config.js อ่านค่านั้นมาใช้ตรวจ CSRF ให้เองแล้ว

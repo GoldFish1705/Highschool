@@ -56,4 +56,15 @@ process.on('unhandledRejection', (reason) => {
 server.listen(config.port, config.host, () => {
   console.log(`[server] เว็บไซต์วางแผนการอ่านหนังสือพร้อมใช้งานที่ http://${config.host}:${config.port}`);
   console.log(`[server] โหมด: ${config.nodeEnv} | ฐานข้อมูล: ${config.databasePath}`);
+
+  if (config.appOrigin) {
+    console.log(`[server] origin ที่ใช้ตรวจ CSRF: ${config.appOrigin}`);
+  } else if (config.isProduction) {
+    // ไม่ใช่ข้อผิดพลาดถึงขั้นหยุดระบบ เพราะการกัน CSRF ยังมีอีก 2 ชั้นทำงานอยู่
+    // แต่ต้องเตือนให้เห็นชัด เพราะการตั้งค่านี้ทำให้ด่านตรวจ Origin แข็งแรงที่สุด
+    console.warn(
+      '[server] คำเตือน: ยังไม่ได้ตั้ง APP_ORIGIN ระบบจะใช้ header Host แทนในการตรวจ CSRF\n'
+      + '          แนะนำให้ตั้ง APP_ORIGIN เป็น URL จริงของเว็บ เช่น https://ชื่อแอป.onrender.com',
+    );
+  }
 });
