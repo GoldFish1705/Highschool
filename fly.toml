@@ -1,0 +1,51 @@
+# ตัวอย่างการตั้งค่าสำหรับ Fly.io
+#
+# เลือก Fly.io เป็นตัวเลือกหลักเพราะให้ "volume ถาวร" ในแพ็กเกจฟรี
+# ซึ่งจำเป็นสำหรับ SQLite ที่เก็บข้อมูลเป็นไฟล์
+# (โฮสต์ฟรีที่ใช้ดิสก์ชั่วคราวจะทำให้ข้อมูลผู้ใช้หายทุกครั้งที่ deploy ใหม่)
+#
+# วิธีใช้: แก้ app ให้เป็นชื่อที่ต้องการ แล้วดูขั้นตอนทั้งหมดใน README.md
+
+app = "study-planner"
+primary_region = "sin"          # สิงคโปร์ ใกล้ประเทศไทยที่สุด
+
+[build]
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+  TRUST_PROXY = "1"             # อยู่หลัง proxy ของ Fly จึงต้องอ่าน IP จริงจาก X-Forwarded-For
+  SECURE_COOKIES = "1"          # Fly ให้ HTTPS อยู่แล้ว จึงเปิดคุกกี้แบบ Secure ได้
+  DATA_DIR = "/data"
+  # จำกัดชุดเธรดเบื้องหลังและ arena ของตัวจัดการหน่วยความจำ เพื่อกดการใช้แรมลง
+  # (วัดจริง: ค่าเริ่มต้นใช้สูงสุด 148 MB เมื่อตั้ง 2 ค่านี้เหลือ 109 MB)
+  UV_THREADPOOL_SIZE = "2"
+  MALLOC_ARENA_MAX = "2"
+
+# volume ถาวรสำหรับเก็บไฟล์ฐานข้อมูล SQLite
+[[mounts]]
+  source = "study_planner_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true            # บังคับให้เข้าผ่าน HTTPS เสมอ
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0      # ให้หยุดเครื่องเมื่อไม่มีคนใช้ ประหยัดโควตาฟรี
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/login"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"              # เพียงพอมาก เพราะแอปใช้จริงราว 60-70 MB
