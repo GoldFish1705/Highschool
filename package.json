@@ -1,0 +1,16 @@
+{
+  "name": "study-planner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "เว็บไซต์วางแผนการอ่านหนังสือและติดตามเป้าหมายการเรียนสำหรับนักเรียนระดับมัธยมศึกษาตอนปลาย",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node --no-warnings --max-old-space-size=128 server/server.js",
+    "dev": "node --no-warnings --watch server/server.js",
+    "test": "node --no-warnings --test \"test/*.test.js\""
+  },
+  "license": "MIT"
+}

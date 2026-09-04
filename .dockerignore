@@ -1,0 +1,11 @@
+.git
+.gitignore
+data
+test
+screenshots
+*.md
+!README.md
+node_modules
+.env
+.env.*
+*.log

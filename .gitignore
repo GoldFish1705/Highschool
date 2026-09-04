@@ -1,0 +1,15 @@
+# ข้อมูลผู้ใช้และความลับของระบบ — ห้าม commit เด็ดขาด
+data/
+*.db
+*.db-wal
+*.db-shm
+*.key
+.env
+.env.*
+
+# ไฟล์ชั่วคราว
+node_modules/
+npm-debug.log*
+.DS_Store
+*.log
+screenshots/
